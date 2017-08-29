@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="99f94834-35fc-45bc-af44-945d35e7be15" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/img/editor01.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="C:\Users\E610896\Downloads\BracketsPortable\humtools\.idea\shelf/" />
     <ignored path="C:\Users\E610896\Downloads\BracketsPortable\humtools-ucb\.idea\shelf/" />
@@ -398,7 +398,14 @@
       <option name="project" value="LOCAL" />
       <updated>1503998375959</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="update readme with editor early stages">
+      <created>1503998844884</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1503998844884</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -456,7 +463,8 @@
     <MESSAGE value="Humtools 0.0.1" />
     <MESSAGE value="Humtools 0.0.3" />
     <MESSAGE value="Humtools 0.0.4" />
-    <option name="LAST_COMMIT_MESSAGE" value="Humtools 0.0.4" />
+    <MESSAGE value="update readme with editor early stages" />
+    <option name="LAST_COMMIT_MESSAGE" value="update readme with editor early stages" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
