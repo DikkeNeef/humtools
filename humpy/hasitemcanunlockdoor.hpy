@@ -11,7 +11,9 @@
 #======================================================================================= 
 ---INIT---
 GLODEVAR -> mykeys
+
 ---BLKS---
+
 ---CODE---
 [when user has mykeys it unlocks xyz123]
 CLICK -> 431178cd-f006-42de-ab32-20746b8c0bd7 -> ACTIVATE -> mykeys -> ANI -> 431178cd-f006-42de-ab32-20746b8c0bd7
