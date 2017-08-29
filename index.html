@@ -68,6 +68,22 @@
             });
         }
 
+        function intray(m) {
+            var a = [];
+            for (var i = 0; i < m; i++) {
+                a.push(i);
+            }
+            return a
+        }
+
+        function int2strray(m) {
+            var a = [];
+            for (var i = 0; i < m; i++) {
+                a.push('' + i);
+            }
+            return a
+        }
+
         var d = [{
                 type: 'group',
                 title: 'General',
@@ -76,23 +92,86 @@
                 type: 'text',
                 title: 'Name',
                 key: 'name',
-                value: 'mark a new slice or select an object',
+                value: '',
                 description: ''
             },
             {
                 type: 'text',
                 title: 'GUID',
                 key: 'guid',
-                value: "null",
+                value: ' ',
                 description: ''
             },
             {
+                type: 'select',
+                title: 'Scene',
+                key: 'scene',
+                value: '0',
+                items: int2strray(8)
+            },
+            {
                 type: 'group',
-                title: 'Configure'
+                title: 'Advanced'
+            },
+            {
+                type: 'switch',
+                title: 'Loop',
+                key: 'loop',
+                value: false,
+                description: ''
+            },
+            {
+                type: 'text',
+                title: 'Sound',
+                key: 'sound',
+                value: '',
+                description: ''
+            },
+            {
+                type: 'select',
+                title: 'Script',
+                key: 'script',
+                value: '',
+                items: ['', 'no script', 'choice', 'sequence', 'custom']
+            },
+            {
+                type: 'html',
+                title: 'Script Parameters',
+                key: 'parameters',
+                value: '',
+                description: '',
+                vertical: false
+            },
+            {
+                type: 'group',
+                title: 'Complex'
+            },
+            {
+                type: 'switch',
+                title: 'Singleton',
+                key: 'singleton',
+                value: false,
+                description: 'Turns down ALL animations and sounds except this'
+            },
+            {
+                type: 'switch',
+                title: 'Block',
+                key: 'block',
+                value: false,
+                description: 'Blocks further interaction (e.g. leaving scene)'
+            },
+            {
+                type: 'html',
+                title: 'Stop',
+                key: 'stop',
+                value: '',
+                description: 'Turns down animations and sounds (can self-include)',
+                vertical: false
             }
         ]
 
-        var mts_configuration = function(_d) {
+        var mts_configuration = function(_d, first_config) {
+            var first_config = first_config || false;
             var e = document.getElementById("mts-pr-settings");
             if (e !== null) {
                 e.innerHTML = ""
@@ -105,6 +184,9 @@
                 var e = document.getElementById("mts-pr-settings");
                 if (e !== null) {
                     disableElementByAttribute(document.getElementsByClassName("property-item"), "guid");
+                    if (first_config == true) {
+                        disableElementByAttribute(document.getElementsByClassName("property-item"), "name");
+                    }
                 }
             });
 
@@ -119,7 +201,11 @@
                 event: {
                     select: function(node) {
                         this.select(node.index);
-                        console.log(node.data.title);
+                        try {
+                            if (~node.index.indexOf(".")) {
+                                console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                            }
+                        } catch (e) {}
                     }
                 },
                 tpl: {
@@ -198,7 +284,7 @@
 
 
         <div class="title">
-            Mark to Slice <i class="icon-arrow1"></i>
+            All-Around Object Editor <i class="icon-arrow1"></i>
         </div>
         <div class="content">
             <div class="col col-4">
@@ -303,14 +389,14 @@
         </div>
 
         <div class="title ">
-            Conversation Editor <i class="icon-arrow1 "></i>
+            Scene Editor <i class="icon-arrow1 "></i>
         </div>
         <div class="content ">
 
         </div>
 
         <div class="title ">
-            Humpy <i class="icon-arrow1 "></i>
+            Conversation Editor <i class="icon-arrow1 "></i>
         </div>
         <div class="content ">
 
