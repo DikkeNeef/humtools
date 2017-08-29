@@ -21,6 +21,23 @@
     <script src="lib/core.min.js"></script>
     <script src="dist/ui.min.js"></script>
     <script>
+        var findElementByAttribute = function(a, value) {
+            for (var i = 0, len = a.length; i < len; i++) {
+                if (a[i].getAttribute("data-key") === value) {
+                    return a[i];
+                }
+            }
+            return null;
+        }
+        var disableElementByAttribute = function(e, value) {
+            for (var i = 0, len = e.length; i < len; i++) {
+                console.log(e[i].getAttribute("data-key"));
+                if (e[i].getAttribute("data-key") === value) {
+                    return e[i].getElementsByTagName("input")[0].setAttribute("disabled", "disabled");
+                }
+            }
+            return null;
+        }
         jui.ready(["ui.accordion"], function(accordion) {
             accordion = accordion("#accordion", {
                 multipanel: true,
@@ -36,13 +53,109 @@
                         $(e.target).find("i").attr("class", "icon-arrow1");
                     }
                 },
-                index: 0,
+                index: 1,
                 autoFold: true
             });
             var content = $("div.content");
             content.css("height", "" + innerHeight - (content.length + 1) * 34 + "px");
         });
 
+        function guid4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        var d = [{
+                type: 'group',
+                title: 'General',
+            },
+            {
+                type: 'text',
+                title: 'Name',
+                key: 'name',
+                value: '',
+                description: ''
+            },
+            {
+                type: 'text',
+                title: 'GUID',
+                key: 'guid',
+                value: guid4(),
+                description: ''
+            },
+            {
+                type: 'group',
+                title: 'Configure'
+            }
+        ]
+
+        var mts_configuration = function(_d) {
+            var e = document.getElementById("mts-pr-settings");
+            if (e !== null) {
+                e.innerHTML = ""
+            }
+            jui.ready(["ui.property"], function(PropertyView) {
+                window.mts_property_settings = new PropertyView('#mts-pr-settings', {
+                    items: _d
+                });
+
+                var e = document.getElementById("mts-pr-settings");
+                if (e !== null) {
+                    disableElementByAttribute(document.getElementsByClassName("property-item"), "guid");
+                }
+            });
+
+        }
+        mts_configuration(d);
+
+        jui.ready(["ui.tree"], function(tree) {
+            object_tree = tree("#object_tree .tree", {
+                root: {
+                    title: "scene"
+                },
+                event: {
+                    select: function(node) {
+                        this.select(node.index);
+                        console.log("index(" + node.index + "), title(" + node.data.title + ")");
+                    }
+                },
+                tpl: {
+                    node: $("#tpl_node").html()
+                }
+            });
+            var scenes = 8;
+            for (var i = 0; i < scenes; i++) {
+
+                object_tree.append({
+                    title: "" + i
+                });
+
+                object_tree.append("" + i, {
+                    title: guid4() + " ::: " + "Pajama Sam"
+                });
+
+                object_tree.append("" + i, {
+                    title: guid4() + " ::: " + "Spy Fox"
+                });
+            }
+            for (var i = 0; i < scenes; i++) {
+
+                object_tree.fold("" + i)
+            }
+        });
+
+    </script>
+
+    <script id="tpl_node" type="text/template">
+        <li>
+            <div style="font-family: Consolas, monaco, monospace; font-size: 16px;">
+                <!= title !>
+            </div>
+            <ul></ul>
+        </li>
     </script>
     <style type="text/css">
         .hover {
@@ -120,6 +233,11 @@
             <div class="col col-7">
                 <ul class="pill top">
                     <li class="active">
+                        <a href="#" class="hover">Preview</a>
+                        <div class="anchor"></div>
+                    </li>
+
+                    <li class="active">
                         <a href="#" class="hover">Initial Customization of Properties</a>
                         <div class="anchor"></div>
                     </li>
@@ -130,33 +248,65 @@
                     </li>
                 </ul>
                 <div class="row">
+                    <style type="text/css">
+                        .mts-property-container {
+                            float: left;
+                            width: 40%;
+                            height: 640px;
+                            position: relative;
+                            overflow: auto;
+                            border: 1px solid #000;
+                        }
+                        
+                        .mts-property-container h1 {
+                            color: #000;
+                            text-align: center;
+                            margin-top: 10px;
+                            margin-bottom: 10px;
+                            border-bottom: 0px;
+                        }
+
+                    </style>
+                    <div class="mts-property-container">
+                        <h1>Properties - Object</h1>
+                        <hr>
+                        <div id="mts-pr-settings" class="property"></div>
+                    </div>
+                    <style type="text/css">
+                        .mts-tree-container {
+                            float: right;
+                            width: 57.5%;
+                            height: 640px;
+                            position: relative;
+                            overflow: auto;
+                            border: 1px solid #000;
+                        }
+                        
+                        .mts-tree-container h1 {
+                            color: #000;
+                            text-align: center;
+                            margin-top: 10px;
+                            margin-bottom: 10px;
+                            border-bottom: 0px;
+                        }
+
+                    </style>
+                    <div class="mts-tree-container">
+                        <h1>Object Tree</h1>
+                        <hr>
+                        <div id="object_tree" class="row">
+                            <div class="col col-12">
+                                <ul class="tree line"></ul>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
         <div class="title ">
-            Frame Cutter <i class="icon-arrow1 "></i>
-        </div>
-        <div class="content ">
-
-        </div>
-
-        <div class="title ">
-            Object Property editor<i class="icon-arrow1 "></i>
-        </div>
-        <div class="content ">
-
-        </div>
-
-        <div class="title ">
             Conversation Editor <i class="icon-arrow1 "></i>
-        </div>
-        <div class="content ">
-
-        </div>
-
-        <div class="title ">
-            Scene Editor <i class="icon-arrow1 "></i>
         </div>
         <div class="content ">
 
