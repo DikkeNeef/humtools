@@ -1,0 +1,18 @@
+#=======================================================================================  
+# Purpose:  when user has mykeys it unlocks xyz123
+#           when user clicks on unlocked xyz123 it activates a talk ANIMATION
+#           after the ANIMATION it goes to SCENE 6 with an entering ANIMATION
+#           when user clicks on locked xyz123 it activates an error ANIMATION
+# mykeys -> GLOB
+# 431178cd-f006-42de-ab32-20746b8c0bd7 -> pick up keys
+# f983ef4a-0f57-4351-8b30-c5de72408b83 -> open door with keys
+# 7a1afc13-0c4e-4df1-8ad7-fc8ef76d6808 -> entering the new scene
+# 0efe31cd-9825-4ccd-9cbf-007e542edd38 -> trying to open door without keys
+#======================================================================================= 
+---INIT---
+GLODEVAR -> mykeys
+---BLKS---
+---CODE---
+CLICK -> 431178cd-f006-42de-ab32-20746b8c0bd7 -> ACTIVATE -> mykeys -> ANI -> 431178cd-f006-42de-ab32-20746b8c0bd7
+CLICK -> f983ef4a-0f57-4351-8b30-c5de72408b83 -> ACTIVE -> mykeys -> ANI -> f983ef4a-0f57-4351-8b30-c5de72408b83 -> SCENE -> 6 -> ANI -> 7a1afc13-0c4e-4df1-8ad7-fc8ef76d6808
+CLICK -> f983ef4a-0f57-4351-8b30-c5de72408b83 -> DEACTIVE -> mykeys -> ANI -> 0efe31cd-9825-4ccd-9cbf-007e542edd38
