@@ -76,14 +76,14 @@
                 type: 'text',
                 title: 'Name',
                 key: 'name',
-                value: '',
+                value: 'mark a new slice or select an object',
                 description: ''
             },
             {
                 type: 'text',
                 title: 'GUID',
                 key: 'guid',
-                value: guid4(),
+                value: "null",
                 description: ''
             },
             {
@@ -119,7 +119,7 @@
                 event: {
                     select: function(node) {
                         this.select(node.index);
-                        console.log("index(" + node.index + "), title(" + node.data.title + ")");
+                        console.log(node.data.title);
                     }
                 },
                 tpl: {
@@ -206,17 +206,14 @@
                     <ul class="pill top">
                         <li class="active">
                             <a href="#" class="hover">Load</a>
-                            <div class="anchor"></div>
                         </li>
 
                         <li class="active">
                             <a href="#" class="hover">Reset</a>
-                            <div class="anchor"></div>
                         </li>
 
                         <li class="active">
                             <a href="#" class="hover">Slice</a>
-                            <div class="anchor"></div>
                         </li>
                     </ul>
                     <div class="row">
@@ -232,20 +229,20 @@
             </div>
             <div class="col col-7">
                 <ul class="pill top">
+
                     <li class="active">
-                        <a href="#" class="hover">Preview</a>
+                        <a href="#">Initial Customization of Properties</a>
                         <div class="anchor"></div>
                     </li>
 
                     <li class="active">
-                        <a href="#" class="hover">Initial Customization of Properties</a>
-                        <div class="anchor"></div>
+                        <a href="#" class="hover">Preview</a>
                     </li>
 
                     <li class="active">
                         <a href="#" class="hover">Save Properties</a>
-                        <div class="anchor"></div>
                     </li>
+
                 </ul>
                 <div class="row">
                     <style type="text/css">
@@ -268,7 +265,7 @@
 
                     </style>
                     <div class="mts-property-container">
-                        <h1>Properties - Object</h1>
+                        <h1>Object Properties</h1>
                         <hr>
                         <div id="mts-pr-settings" class="property"></div>
                     </div>
