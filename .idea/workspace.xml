@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="99f94834-35fc-45bc-af44-945d35e7be15" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/draft/benchmark bytes.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/draft/benchmark bytes.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/draft/byte calculation - compressed.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/draft/byte calculation.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/draft/container.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/draft/object.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Humongous Editor - draft (dutch).docx" afterPath="$PROJECT_DIR$/draft/Humongous Editor (dutch).docx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/draft/container.json" afterPath="$PROJECT_DIR$/draft/container.json" />
     </list>
     <ignored path="C:\Users\E610896\Downloads\BracketsPortable\humtools\.idea\shelf/" />
     <ignored path="C:\Users\E610896\Downloads\BracketsPortable\humtools-ucb\.idea\shelf/" />
@@ -91,8 +83,8 @@
       <file leaf-file-name="container.json" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/draft/container.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="70" column="26" selection-start-line="70" selection-start-column="26" selection-end-line="70" selection-end-column="26" />
+            <state relative-caret-position="394">
+              <caret line="95" column="7" selection-start-line="95" selection-start-column="7" selection-end-line="95" selection-end-column="7" />
               <folding>
                 <element signature="e#318#479#0" expanded="false" />
                 <element signature="e#495#656#0" expanded="false" />
@@ -101,8 +93,6 @@
                 <element signature="e#1221#1295#0" expanded="false" />
                 <element signature="e#1320#1394#0" expanded="false" />
                 <element signature="e#1418#1500#0" expanded="false" />
-                <element signature="n#!!block;n#mapper#0;n#!!block;n#0#0;n#!!top" expanded="false" />
-                <element signature="n#!!block;n#regzrg15ezs1g65ze1sg56#0;n#!!block;n#mapper#0;n#!!block;n#0#0;n#!!top" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -556,7 +546,14 @@
       <option name="project" value="LOCAL" />
       <updated>1504017028689</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="draft folder with benchmarks and templates">
+      <created>1504082079839</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1504082079839</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -616,7 +613,8 @@
     <MESSAGE value="Humtools 0.0.4" />
     <MESSAGE value="update readme with editor early stages" />
     <MESSAGE value="client side slicer and complex properties" />
-    <option name="LAST_COMMIT_MESSAGE" value="client side slicer and complex properties" />
+    <MESSAGE value="draft folder with benchmarks and templates" />
+    <option name="LAST_COMMIT_MESSAGE" value="draft folder with benchmarks and templates" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -755,6 +753,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
           <caret line="145" column="30" selection-start-line="145" selection-start-column="30" selection-end-line="145" selection-end-column="30" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -818,8 +817,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/draft/container.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="70" column="26" selection-start-line="70" selection-start-column="26" selection-end-line="70" selection-end-column="26" />
+        <state relative-caret-position="394">
+          <caret line="95" column="7" selection-start-line="95" selection-start-column="7" selection-end-line="95" selection-end-column="7" />
           <folding>
             <element signature="e#318#479#0" expanded="false" />
             <element signature="e#495#656#0" expanded="false" />
@@ -828,8 +827,6 @@
             <element signature="e#1221#1295#0" expanded="false" />
             <element signature="e#1320#1394#0" expanded="false" />
             <element signature="e#1418#1500#0" expanded="false" />
-            <element signature="n#!!block;n#mapper#0;n#!!block;n#0#0;n#!!top" expanded="false" />
-            <element signature="n#!!block;n#regzrg15ezs1g65ze1sg56#0;n#!!block;n#mapper#0;n#!!block;n#0#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>
