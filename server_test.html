@@ -7,14 +7,21 @@
 
 <script src="lib/jquery-1.8.0.min.js"></script>
 <script>
+    API = "http://localhost:8000/api/"
     GLOBALS = {
         api: null,
         scene: null,
         object: null
     }
 
-    function hello_world() {
-        $.get("http://localhost:8000/api/hello/server_test", {}, function(data) {
+    function get(URL) {
+        $.get(API + URL, {}, function(data) {
+            if (URL == "scene_get_scene")
+        });
+    };
+
+    function post(URL, payload) {
+        $.post(API + URL, payload, function(data) {
 
         });
     };

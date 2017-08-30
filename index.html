@@ -280,6 +280,47 @@
             }
         });
 
+
+        jui.ready(["ui.tree"], function(tree) {
+            object_tree = tree("#conv_tree .tree", {
+                root: {
+                    title: "scene"
+                },
+                event: {
+                    select: function(node) {
+                        this.select(node.index);
+                        try {
+                            if (~node.index.indexOf(".")) {
+                                console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                            }
+                        } catch (e) {}
+                    }
+                },
+                tpl: {
+                    node: $("#tpl_node").html()
+                }
+            });
+            var scenes = 8;
+            for (var i = 0; i < scenes; i++) {
+
+                object_tree.append({
+                    title: "" + i
+                });
+
+                object_tree.append("" + i, {
+                    title: guid4() + " ::: " + "Melon 1"
+                });
+
+                object_tree.append("" + i, {
+                    title: guid4() + " ::: " + "Melon 2"
+                });
+            }
+            for (var i = 0; i < scenes; i++) {
+
+                object_tree.fold("" + i)
+            }
+        });
+
     </script>
 
     <script id="tpl_node" type="text/template">
@@ -384,6 +425,10 @@
                         </li>
                         <li class="active">
                             <a class="hover" href="#">Blacklist Slice</a>
+                        </li>
+                        <li class="active">
+                            <input id="seconds" type="number" max="100" min="0" step="1" value="10" style="text-align: center; margin-top:4px;">
+                            <div style="text-align: center; margin-left:8px;padding-top:4px; float:right; font-size:16px;"> seconds for slicing</div>
                         </li>
                     </ul>
                     <div class="row">
@@ -571,7 +616,7 @@
 
                 </ul>
                 <div class="row">
-                    <div class="mts-tree-container" style="height: 480px; float: left;">
+                    <div class="mts-tree-container" style="height: 480px; float: left; width:100%;">
                         <h1>Scene Tree</h1>
                         <hr>
                         <div id="scene_tree" class="row">
@@ -590,6 +635,55 @@
         </div>
         <div class="content ">
 
+            <div class="col col-7">
+                <div style="text-align: center;">
+                    <ul class="pill top">
+
+                        <li class="active">
+                            <a href="#" class="hover">Save</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="row" style="border: 2px solid #000">
+                    <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">Dutch</div>
+                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                </div>
+                <br>
+                <div class="row" style="border: 2px solid #000">
+                    <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">English</div>
+                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                </div>
+                <br>
+                <div class="row" style="border: 2px solid #000">
+                    <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">French</div>
+                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                </div>
+                <br>
+            </div>
+            <div class="col col-1">
+            </div>
+            <div class="col col-4">
+                <ul class="pill top">
+
+                    <li class="active">
+                        <a href="#">Initial Customization of Conversations - subtitles</a>
+                        <div class="anchor"></div>
+                    </li>
+
+                </ul>
+                <div class="row">
+                    <div class="mts-tree-container" style="height: 480px; float: left; width:100%;">
+                        <h1>Conversation Tree</h1>
+                        <hr>
+                        <div id="conv_tree" class="row">
+                            <div class="col col-12">
+                                <ul class="tree line"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
