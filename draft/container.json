@@ -1,0 +1,87 @@
+{
+  "0": {
+    "bg": "",
+    "music": "",
+    "animations": [
+        {
+          "guid": "00000000-0000-4000-0000-000000000000",
+          "sound": "",
+          "name": "",
+          "script": 0,
+          "scene": 0,
+          "stop": [],
+          "params": [],
+          "sequence": [
+            [
+              {
+                "i": "regzrg15ezs1g65ze1sg56",
+                "x": 0,
+                "y": 0,
+                "w": 64,
+                "h": 48
+              },
+              {
+                "i": "gnsq468esdh4f6h46s6sh4",
+                "x": 0,
+                "y": 0,
+                "w": 32,
+                "h": 24
+              }
+            ],
+            [
+              {
+                "i": "aa6854a6841685az4dfsdf",
+                "x": 4,
+                "y": 16,
+                "w": 64,
+                "h": 48
+              },
+              {
+                "i": "gnsq468esdh4f6h46s6sh4",
+                "x": 13,
+                "y": 15,
+                "w": 35,
+                "h": 17
+              }
+            ]
+          ],
+          "blacklist": false,
+          "singleton": false,
+          "block": false,
+          "loop": false,
+          "conv": {
+            "dutch": [
+              "Hallo Wereld!",
+              "Dit is BoB."
+            ],
+            "english": [
+              "Hello World!",
+              "This is BoB."
+            ],
+            "french": [
+              "Bonjour tout le monde!",
+              "C'est BoB."
+            ],
+            "time": [
+              {
+                "from": 0,
+                "till": 2
+              },
+              {
+                "from": 2,
+                "till": 5
+              }
+            ]
+          }
+        }
+      ],
+    "mapper": {
+      "regzrg15ezs1g65ze1sg56": {
+        "x": 16,
+        "y": 16,
+        "w": 48,
+        "h": 48
+      }
+    }
+  }
+}

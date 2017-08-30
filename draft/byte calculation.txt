@@ -1,0 +1,6 @@
+60 scenes
+1 MB = 3 scenes -> 60 scenes / 3 scenes -> 20MB + ~5 MB = 25MB # images
+1 MB = 8 scenes -> 60 scenes / 8 scenes ->  8MB + ~2 MB = 10MB # json
+1 MB = 2 scenes -> 60 scenes / 2 scenes -> 30MB + ~0 MB = 30MB # music
+1 MB = 4 scenes -> 60 scenes / 4 scenes -> 15MB + ~0 MB = 15MB # sounds
+Total -> 80 MB * 0.8 correction = 65 MB

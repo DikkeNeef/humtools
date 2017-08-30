@@ -1,0 +1,13 @@
+{
+  "guid": "00000000-0000-4000-0000-000000000000",
+  "sound": "00000000-0000-4000-0000-00000000000",
+  "name": "",
+  "script": 0,
+  "scene": 0,
+  "stop": [],
+  "params": [],
+  "loop": false,
+  "block": false,
+  "blacklist": false,
+  "singleton": false
+}

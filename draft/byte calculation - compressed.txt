@@ -1,0 +1,5 @@
+25MB * 0.4 ->  10MB # images
+10MB * 0.3 ->   3MB # json
+30MB * 0.5 ->  15MB # music
+15MB * 0.5 ->   8MB # sounds
+Total      ->  40MB # 50% 
