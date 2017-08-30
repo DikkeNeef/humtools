@@ -240,6 +240,46 @@
             }
         });
 
+        jui.ready(["ui.tree"], function(tree) {
+            object_tree = tree("#scene_tree .tree", {
+                root: {
+                    title: "scene"
+                },
+                event: {
+                    select: function(node) {
+                        this.select(node.index);
+                        try {
+                            if (~node.index.indexOf(".")) {
+                                console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                            }
+                        } catch (e) {}
+                    }
+                },
+                tpl: {
+                    node: $("#tpl_node").html()
+                }
+            });
+            var scenes = 8;
+            for (var i = 0; i < scenes; i++) {
+
+                object_tree.append({
+                    title: "" + i
+                });
+
+                object_tree.append("" + i, {
+                    title: "Image"
+                });
+
+                object_tree.append("" + i, {
+                    title: "Music"
+                });
+            }
+            for (var i = 0; i < scenes; i++) {
+
+                object_tree.fold("" + i)
+            }
+        });
+
     </script>
 
     <script id="tpl_node" type="text/template">
@@ -272,6 +312,40 @@
             cursor: pointer !important;
             box-shadow: 2px 2px -2px -2px #222;
             transform: translateY(-2px);
+        }
+        
+        .mts-property-container {
+            float: left;
+            width: 40%;
+            height: 640px;
+            position: relative;
+            overflow: auto;
+            border: 1px solid #000;
+        }
+        
+        .mts-property-container h1 {
+            color: #000;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-bottom: 0px;
+        }
+        
+        .mts-tree-container {
+            float: right;
+            width: 57.5%;
+            height: 640px;
+            position: relative;
+            overflow: auto;
+            border: 1px solid #000;
+        }
+        
+        .mts-tree-container h1 {
+            color: #000;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-bottom: 0px;
         }
 
     </style>
@@ -328,7 +402,15 @@
                                 function draw() {
                                     ctx.beginPath();
                                     ctx.rect(rect._X, rect._Y, rect.w, rect.h);
-                                    ctx.stroke()
+                                    ctx.stroke();
+
+                                    ctx.moveTo(rect.x - rect.w / 2.0, rect.y);
+                                    ctx.lineTo(rect.x - rect.w / 2.0, rect.y - rect.h);
+                                    ctx.stroke();
+
+                                    ctx.moveTo(rect.x, rect.y - rect.h / 2.0);
+                                    ctx.lineTo(rect.x - rect.w, rect.y - rect.h / 2.0);
+                                    ctx.stroke();
                                 }
 
                                 function getOffset(el) {
@@ -413,58 +495,22 @@
                     </li>
 
                     <li class="active">
-                        <a href="#" class="hover">Preview</a>
-                    </li>
-
-                    <li class="active">
                         <a href="#" class="hover">Save Properties</a>
                     </li>
 
+                    <li class="active">
+                        <a href="#" class="hover">Listen to Audio</a>
+
+                    </li>
+                    <audio id="audio_object" type="audio/ogg" controls style="width: 320px; height: 32px;" />
+
                 </ul>
                 <div class="row">
-                    <style type="text/css">
-                        .mts-property-container {
-                            float: left;
-                            width: 40%;
-                            height: 640px;
-                            position: relative;
-                            overflow: auto;
-                            border: 1px solid #000;
-                        }
-                        
-                        .mts-property-container h1 {
-                            color: #000;
-                            text-align: center;
-                            margin-top: 10px;
-                            margin-bottom: 10px;
-                            border-bottom: 0px;
-                        }
-
-                    </style>
                     <div class="mts-property-container">
                         <h1>Object Properties</h1>
                         <hr>
                         <div id="mts-pr-settings" class="property"></div>
                     </div>
-                    <style type="text/css">
-                        .mts-tree-container {
-                            float: right;
-                            width: 57.5%;
-                            height: 640px;
-                            position: relative;
-                            overflow: auto;
-                            border: 1px solid #000;
-                        }
-                        
-                        .mts-tree-container h1 {
-                            color: #000;
-                            text-align: center;
-                            margin-top: 10px;
-                            margin-bottom: 10px;
-                            border-bottom: 0px;
-                        }
-
-                    </style>
                     <div class="mts-tree-container">
                         <h1>Object Tree</h1>
                         <hr>
@@ -483,7 +529,60 @@
             Scene Editor <i class="icon-arrow1 "></i>
         </div>
         <div class="content ">
+            <div class="col col-4">
+                <div style="text-align: center;">
+                    <ul class="pill top">
 
+                        <li class="active">
+                            <a href="#" class="hover">Capture Background</a>
+                        </li>
+
+                        <li class="active">
+                            <a href="#" class="hover">Record Music</a>
+                        </li>
+
+                    </ul>
+                    <div class="row">
+                        <div style="text-align: center;" width="640px" height="480px">
+                            <canvas id="scene_preview" style="border: #000000 solid 2px; " width="640px " height="480px "></canvas>
+                        </div>
+                        <br>
+                        <audio id="audio_scene" type="audio/ogg" controls style="width: 640px; height: 48px;" />
+                    </div>
+                </div>
+            </div>
+            <div class="col col-1">
+            </div>
+            <div class="col col-7">
+                <ul class="pill top">
+
+                    <li class="active">
+                        <a href="#">Initial Customization of Scenes</a>
+                        <div class="anchor"></div>
+                    </li>
+
+                    <li class="active">
+                        <a href="#" class="hover">Add Scene</a>
+                    </li>
+
+                    <li class="active">
+                        <a href="#" class="hover">Save Scene</a>
+                    </li>
+
+                </ul>
+                <div class="row">
+                    <div class="mts-tree-container" style="height: 480px; float: left;">
+                        <h1>Scene Tree</h1>
+                        <hr>
+                        <div id="scene_tree" class="row">
+                            <div class="col col-12">
+                                <ul class="tree line"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <div class="title ">
