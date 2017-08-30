@@ -12,6 +12,19 @@ Run As Admin in Windows PowerShell
 $ npm install --global --production windows-build-tools  
 $ npm install --global node-gyp  
 
+[run simple server]  
+c:\Python27\python.exe -m SimpleHTTPServer
+
+[API calls]  
+http://localhost:8000/api/  
+
+[APP Environment]  
+http://127.0.0.1:8000/index.html
+
+[Test Environment]  
+http://127.0.0.1:8000/server_test.html
+
+
 ![Editor V0.1](img/editor01.png)
 
   
