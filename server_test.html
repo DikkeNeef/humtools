@@ -15,13 +15,27 @@
     }
 
     function get(URL) {
+        URL = URL || "";
         $.get(API + URL, {}, function(data) {
-            if (URL == "scene_get_scene")
+            if (URL == "scene_get_scene") {
+                // get all scenes for the "scene tree" -> background + music
+                console.log(data);
+            } else {
+                // default
+                console.log(data);
+            }
         });
     };
 
     function post(URL, payload) {
         $.post(API + URL, payload, function(data) {
+            if (URL == "hello") {
+                // Hello World test
+                console.log(data);
+            } else {
+                // default
+                console.log(data);
+            }
 
         });
     };
@@ -30,7 +44,7 @@
 
 <body>
 
-    <button onclick="hello_world()">hello</button>
+    <button onclick='post("hello", {"name": "Goofrey"})'>hello</button>
 
 </body>
 
