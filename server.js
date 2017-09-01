@@ -18,8 +18,10 @@ var rpc = new zerorpc.Client();
 rpc.connect("tcp://127.0.0.1:4242");
 
 router.get('/', function (req, res_) {
-    res_.json({
-        message: 'hooray! welcome to our api!'
+    rpc.invoke("hello", "Default API Greetings", function (error, res, more) {
+        res_.json({
+            "name": res
+        });
     });
 });
 
