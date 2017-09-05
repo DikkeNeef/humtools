@@ -10,9 +10,9 @@ Python Version:     2.7.13
 from functools import partial
 from utils import *
 import zerorpc
-import pyaudio
 import autoit
 import uuid
+import os
 
 
 class HumongousTools(object):
@@ -184,6 +184,14 @@ class HumongousTools(object):
         core = load(self.core)
         save(self.folder + 'backup/' + uuid.uuid4() + '.json', core)
 
+        new_folder = self.folder + 'scene/%s/animations' % (self.total_scenes())
+        if not os.path.exists(new_folder):
+            os.makedirs(new_folder)
+
+        new_folder = self.folder + 'tmp/%s/animations' % (self.total_scenes())
+        if not os.path.exists(new_folder):
+            os.makedirs(new_folder)
+
         d = {
             "container": {},
             "mapper": {}
@@ -193,15 +201,13 @@ class HumongousTools(object):
         save(self.core, core)
         return self.load_scene_tree()
 
-    def record_audio(self, scene):
-        path_file = [
-            "%s%s/%s/music-%s.mp3" % (self.folder, "tmp", str(scene), uuid.uuid4()),
-            "%s%s/%s/music-%s.mp3" % (self.folder, "tmp", str(scene), uuid.uuid4())
-        ]
-        p = pyaudio.PyAudio()
-        stream = p.open([...], as_loopback = True)
-        # TODO record device audio - click on window, start recording
-        # TODO save it to path_file for editing purposes
+    def record_audio_animation(self, scene, guid, seconds=10):
+        path_file = "%s%s/%s/%s/%s" % (self.folder, "tmp", str(scene), guid, guid)
+        record(path_file, seconds)
+
+    def record_audio_scene(self, scene, seconds=10):
+        path_file = "%s%s/%s/music-%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
+        record(path_file, seconds)
 
     def capture_background(self, scene, name="pajama sam", w=640, h=480, ox=8, oy=6):
         path_file = "%s%s/%s/background+%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
@@ -216,7 +222,6 @@ def main():
     if not reload_server:
         server = open_object()
 
-    record("test")
     server.backup()
     s = zerorpc.Server(server)
     s.bind("tcp://0.0.0.0:4242")
