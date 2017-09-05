@@ -7,107 +7,12 @@ Date last modified: 04/09/2017
 Python Version:     2.7.13
 """
 # ==============================================================================
-from ctypes import windll, Structure, c_long, byref
 from functools import partial
-from PIL import Image
-import threading
-import schedule
+from utils import *
 import zerorpc
+import pyaudio
+import autoit
 import uuid
-import json
-import time
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
-
-class POINT(Structure):
-    _fields_ = [("x", c_long), ("y", c_long)]
-
-
-def get_mouse_position():
-    pt = POINT()
-    windll.user32.GetCursorPos(byref(pt))
-    return {"x": pt.x, "y": pt.y}
-
-
-def click(x, y):
-    windll.user32.SetCursorPos(x, y)
-    windll.user32.mouse_event(2, 0, 0, 0, 0)
-    windll.user32.mouse_event(4, 0, 0, 0, 0)
-
-
-def activate_window(x, y):
-    click(x, y)
-
-
-class Slicer(object):
-    def __init__(self):
-        pass
-
-    def slice(self, seconds, blacklist, d=None):
-        if d is not None:
-            x = d['x']
-            y = d['y']
-            w = d['w']
-            h = d['h']
-            # TODO - slice specific area
-        else:
-            pass
-            # TODO - slice full area
-
-
-class Scheduler(object):
-    def __init__(self, fnc, interval=2):
-        self.fnc = fnc
-        self.interval = interval
-        thread = threading.Thread(target=self.run)
-        thread.daemon = False
-        thread.start()
-
-    def run(self):
-        schedule.every(self.interval).seconds.do(self.fnc)
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
-
-
-def get_size(path_file):
-    im = Image.open(path_file)
-    return im.size
-
-
-def prettify(d):
-    return json.dumps(d, indent=4, sort_keys=True)
-
-
-def stringify(d):
-    return json.dumps(d)
-
-
-def load(path_file):
-    return json.load(open(path_file, 'r'))
-
-
-def save(path_file, d):
-    with open(path_file, 'w') as f:
-        json.dump(d, f, indent=4, sort_keys=True)
-
-
-def loads(d):
-    return json.loads(d)
-
-
-def save_object(obj, fn='zerorpc'):
-    print("saving")
-    with open(fn + '.db', 'wb') as output:
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
-
-def open_object(fn='zerorpc'):
-    return pickle.load(open(fn + '.db', "rb"))
 
 
 class HumongousTools(object):
@@ -216,7 +121,6 @@ class HumongousTools(object):
         scene = d["scene"]
         seconds = d["seconds"]
 
-        slicer = Slicer()
         for animation in self.get_animations(scene):
             guid = animation["guid"]
             properties = self.load_object_properties(scene, guid)
@@ -239,9 +143,9 @@ class HumongousTools(object):
         print(prettify(blacklist))
 
         if d["blacklist"]:
-            slicer.slice(seconds, blacklist, {'x': x, 'y': y, 'w': w, 'h': h})
+            slice_frames(seconds, blacklist, {'x': x, 'y': y, 'w': w, 'h': h})
         else:
-            slicer.slice(seconds, blacklist)
+            slice_frames(seconds, blacklist)
 
     def save_object(self, a, scene, guid):
         core = load(self.core)
@@ -289,17 +193,21 @@ class HumongousTools(object):
         save(self.core, core)
         return self.load_scene_tree()
 
-    def record_audio(self, x, y, scene):
+    def record_audio(self, scene):
         path_file = [
             "%s%s/%s/music-%s.mp3" % (self.folder, "tmp", str(scene), uuid.uuid4()),
             "%s%s/%s/music-%s.mp3" % (self.folder, "tmp", str(scene), uuid.uuid4())
         ]
+        p = pyaudio.PyAudio()
+        stream = p.open([...], as_loopback = True)
         # TODO record device audio - click on window, start recording
         # TODO save it to path_file for editing purposes
 
-    def capture_background(self, x, y, scene, w=640, h=480):
-        path_file = "%s%s/%s/background+%s.png" % (self.folder, "tmp", str(scene), uuid.uuid4())
-        # TODO screenshot - (x, y, x+w, y+h) -> save to path_file
+    def capture_background(self, scene, name="pajama sam", w=640, h=480, ox=8, oy=6):
+        path_file = "%s%s/%s/background+%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
+        x, y, _, _ = autoit.win_get_pos(name)
+        box = screenshot(x+ox, y+oy, w, h)
+        png(path_file, box)
 
 
 def main():
@@ -308,6 +216,7 @@ def main():
     if not reload_server:
         server = open_object()
 
+    record("test")
     server.backup()
     s = zerorpc.Server(server)
     s.bind("tcp://0.0.0.0:4242")
