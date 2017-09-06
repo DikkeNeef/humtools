@@ -21,11 +21,42 @@
     <script src="lib/core.min.js"></script>
     <script src="dist/ui.min.js"></script>
     <script>
+        var _guid = "00000000-0000-4000-0000-000000000000";
+        var canvas = null;
+        var ctx = null;
+        var drag = false;
+        var _scene = 0;
         var _seq = [];
-        var rect = {};
+        var rect = {
+            'x': 0,
+            'y': 0,
+            'w': 64,
+            'h': 48
+        };
+
+        function clear() {
+            ctx.clearRect(0, 0, 640, 480);
+        }
 
         function isNumeric(num) {
             return !isNaN(num)
+        }
+
+        function get_coords() {
+            if (rect.h < 0) {
+                rect._Y += rect.h;
+                rect.h *= -1;
+            }
+            if (rect.w < 0) {
+                rect._X += rect.w;
+                rect.w *= -1;
+            }
+            return {
+                x: rect._X,
+                y: rect._Y,
+                w: rect.w,
+                h: rect.h
+            };
         }
 
         var findElementByAttribute = function(cls, value) {
@@ -80,16 +111,15 @@
 
         function music_extension() {
             if (navigator.appName == 'Microsoft Internet Explorer' ||
-                navigator.userAgent.toLowerCase().indexOf('firefox') > -1) ||
-                (navigator.appName == "Netscape" && navigator.appVersion.indexOf('Edge') > -1) {
-                    return '.mp3';
-                }
-            else {
+                navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ||
+                (navigator.appName == "Netscape" && navigator.appVersion.indexOf('Edge') > -1)) {
+                return '.mp3';
+            } else {
                 return '.ogg'
             }
         }
 
-        var load_background(context, path) {
+        function load_background(context, path) {
             var cache = new Date().getTime();
             var img = new Image();
 
@@ -219,7 +249,10 @@
 
             for (var interval in $("#c_time").val().split(/\r?\n/)) {
                 if (interval == "") {
-
+                    intervals.append({
+                        "from": 0,
+                        "till": 0
+                    });
                 } else {
                     intervals.append({
                         "from": interval.split(',')[0],
@@ -244,6 +277,13 @@
             post("save_conversations", payload)
         }
 
+        function load_object_properties() {
+            post("load_object_properties", {
+                "scene": _scene,
+                "guid": _guid
+            })
+        }
+
         function save_properties() {
             var conv = {
                 "dutch": [],
@@ -251,10 +291,14 @@
                 "english": [],
                 "time": [],
             };
-            var parameters = $(findElementByAttribute("property-item", "parameters")).("textarea").val();
+            var parameters = $(findElementByAttribute("property-item", "parameters")).find("textarea").val();
             var stop = $(findElementByAttribute("property-item", "stop")).find(".html").html();
             var guid = $(findElementByAttribute("property-item", "guid")).val();
             a = {
+                "x": get_coords().x,
+                "y": get_coords().y,
+                "w": get_coords().w,
+                "h": get_coords().h,
                 "name": $(findElementByAttribute("property-item", "name")).find("input").val(),
                 "loop": 0 < $(findElementByAttribute("property-item", "loop")).find("div.switch.inner.small.on").length,
                 "sound": $(findElementByAttribute("property-item", "sound")).find("input").val(),
@@ -277,6 +321,19 @@
             post("save_object", payload);
         }
 
+        function start_slice(blacklist) {
+            payload = {
+                "blacklist": blacklist || false,
+                "x": get_coords().x,
+                "y": get_coords().y,
+                "w": get_coords().w,
+                "h": get_coords().h,
+                "seconds": $("#seconds").val(),
+                "scene": _scene
+            }
+            post("_slice", payload);
+        }
+
         function get(URL) {
             URL = URL || "";
             $.get(API + URL, {}, function(data) {
@@ -297,6 +354,10 @@
                                     try {
                                         if (~node.index.indexOf(".")) {
                                             console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                                            _guid = node.data.title.split(' ::: ')[0]
+                                            _scene = node.index.split('.')[0]
+                                            load_object_properties();
+
                                         }
                                     } catch (e) {}
                                 }
@@ -520,11 +581,29 @@
                 } else if (URL == "save_conversations") {
                     console.log(data);
 
+                } else if (URL == "_slice") {
+                    console.log(data);
+
                 } else {
                     console.log(data);
                 }
             });
         };
+
+
+
+        function new_object() {
+            clear();
+            _scene = 0;
+            _guid = "00000000-0000-4000-0000-000000000000";
+            _seq = [];
+            rect = {
+                'x': 0,
+                'y': 0,
+                'w': 64,
+                'h': 48
+            };
+        }
 
     </script>
 
@@ -622,35 +701,31 @@
                         </li>
 
                         <li class="active">
-                            <a href="#" class="hover">Load</a>
+                            <a href="#" class="hover">Reset</a>
                         </li>
-
-                        <li class="active">
-                            <a href="#" class="hover">Save</a>
-                        </li>
-
                         <li class="active">
                             <a href="#" class="hover">Slice</a>
                         </li>
+
                         <li class="active">
                             <a class="hover" href="#">Blacklist Slice</a>
                         </li>
+
                         <li class="active">
                             <input id="seconds" type="number" max="100" min="0" step="1" value="10" style="text-align: center; margin-top:4px;">
                             <div style="text-align: center; margin-left:8px;padding-top:4px; float:right; font-size:16px;"> seconds for slicing</div>
+                        </li>
+
+                        <li class="active">
+                            <a href="#" class="hover">Cut Slice</a>
                         </li>
                     </ul>
                     <div class="row">
                         <div style="text-align: center;" width="640px" height="480px">
                             <canvas id="canvas" style="border: #000000 solid 2px; " width="640px " height="480px "></canvas>
                             <script>
-                                var canvas = document.getElementById('canvas'),
-                                    ctx = canvas.getContext('2d'),
-                                    drag = false;
-
-                                function clear() {
-                                    ctx.clearRect(0, 0, 640, 480);
-                                }
+                                canvas = document.getElementById('canvas');
+                                ctx = canvas.getContext('2d');
 
                                 function draw() {
                                     ctx.beginPath();
@@ -694,23 +769,6 @@
                                     console.log(get_coords());
                                 }
 
-                                function get_coords() {
-                                    if (rect.h < 0) {
-                                        rect._Y += rect.h;
-                                        rect.h *= -1;
-                                    }
-                                    if (rect.w < 0) {
-                                        rect._X += rect.w;
-                                        rect.w *= -1;
-                                    }
-                                    return {
-                                        x: rect._X,
-                                        y: rect._Y,
-                                        w: rect.w,
-                                        h: rect.h
-                                    };
-                                }
-
                                 function mouseMove(e) {
                                     if (drag) {
                                         rect.x = e.pageX - offset.left;
@@ -751,10 +809,6 @@
                         <a href="#" class="hover">Save Properties</a>
                     </li>
 
-                    <li class="active">
-                        <a href="#" class="hover">Listen to Audio</a>
-
-                    </li>
                     <audio id="audio_object" type="audio/ogg" controls style="width: 320px; height: 32px;" />
 
                 </ul>

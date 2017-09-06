@@ -70,25 +70,11 @@ class HumongousTools(object):
         core = load(self.core)
         return core[scene]["animations"][guid]["conv"]
 
-    def load_object_properties(self, scene, guid):
+    def load_object_properties(self, d):
         core = load(self.core)
+        scene, guid = d["scene"], d["guid"]
         a = core[scene]["animations"][guid]
-        return {
-            "guid": guid,
-            "name": a["name"],
-            "sound": a["sound"] if a["sound"] != "" else guid,
-            "script": a["script"],
-            "stop": a["stop"],
-            "params": a["params"],
-            "blacklist": a["blacklist"],
-            "singleton": a["singleton"],
-            "block": a["block"],
-            "loop": a["loop"],
-            "x": a["x"],
-            "y": a["y"],
-            "w": a["w"],
-            "h": a["h"]
-        }
+        return a
 
     def load_sound(self, scene, guid):
         core = load(self.core)
@@ -114,7 +100,7 @@ class HumongousTools(object):
     def backup(self):
         self.scheduler = Scheduler(partial(save_object, self))
 
-    def slice(self, post):
+    def _slice(self, post):
         blacklist = {}
         d = loads(post)
         x = d["x"]
@@ -126,7 +112,7 @@ class HumongousTools(object):
 
         for animation in self.get_animations(scene):
             guid = animation["guid"]
-            properties = self.load_object_properties(scene, guid)
+            properties = self.load_object_properties({"scene": scene, "guid": guid})
             if properties["blacklist"]:
                 path = self.folder + "tmp/" + str(scene) + '/' + str(guid) + '/slice/'
                 for seq in properties['sequence']:
@@ -149,6 +135,8 @@ class HumongousTools(object):
             slice_frames(seconds, blacklist, {'x': x, 'y': y, 'w': w, 'h': h})
         else:
             slice_frames(seconds, blacklist)
+
+        return({"status": "Slicing has started, please wait", "time": seconds})
 
     def save_object(self, d):
         core = load(self.core)
