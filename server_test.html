@@ -28,6 +28,7 @@
     };
 
     function post(URL, payload) {
+        URL = URL || "";
         $.post(API + URL, payload, function(data) {
             if (URL == "hello") {
                 // Hello World test
@@ -36,7 +37,6 @@
                 // default
                 console.log(data);
             }
-
         });
     };
 

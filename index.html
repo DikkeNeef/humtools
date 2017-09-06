@@ -21,7 +21,15 @@
     <script src="lib/core.min.js"></script>
     <script src="dist/ui.min.js"></script>
     <script>
-        var findElementByAttribute = function(a, value) {
+        var _seq = [];
+        var rect = {};
+
+        function isNumeric(num) {
+            return !isNaN(num)
+        }
+
+        var findElementByAttribute = function(cls, value) {
+            var a = document.getElementsByClassName(cls)
             for (var i = 0, len = a.length; i < len; i++) {
                 if (a[i].getAttribute("data-key") === value) {
                     return a[i];
@@ -29,6 +37,7 @@
             }
             return null;
         }
+
         var disableElementByAttribute = function(e, value) {
             for (var i = 0, len = e.length; i < len; i++) {
                 console.log(e[i].getAttribute("data-key"));
@@ -38,6 +47,7 @@
             }
             return null;
         }
+
         jui.ready(["ui.accordion"], function(accordion) {
             accordion = accordion("#accordion", {
                 multipanel: true,
@@ -68,20 +78,27 @@
             });
         }
 
-        function intray(m) {
-            var a = [];
-            for (var i = 0; i < m; i++) {
-                a.push(i);
+        function music_extension() {
+            if (navigator.appName == 'Microsoft Internet Explorer' ||
+                navigator.userAgent.toLowerCase().indexOf('firefox') > -1) ||
+                (navigator.appName == "Netscape" && navigator.appVersion.indexOf('Edge') > -1) {
+                    return '.mp3';
+                }
+            else {
+                return '.ogg'
             }
-            return a
         }
 
-        function int2strray(m) {
-            var a = [];
-            for (var i = 0; i < m; i++) {
-                a.push('' + i);
-            }
-            return a
+        var load_background(context, path) {
+            var cache = new Date().getTime();
+            var img = new Image();
+
+            img.onload = function() {
+                context.clearRect(0, 0, 640, 480);
+                context.drawImage(img, 0, 0);
+            };
+
+            img.src = path + "?" + cache;
         }
 
         var d = [{
@@ -193,126 +210,321 @@
         }
         mts_configuration(d);
 
-        jui.ready(["ui.tree"], function(tree) {
-            object_tree = tree("#object_tree .tree", {
-                root: {
-                    title: "scene"
-                },
-                event: {
-                    select: function(node) {
-                        this.select(node.index);
-                        try {
-                            if (~node.index.indexOf(".")) {
-                                console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+        function save_conversations() {
+            var dutch = $("#c_dutch").val().split(/\r?\n/)
+            var french = $("#c_french").val().split(/\r?\n/)
+            var english = $("#c_english").val().split(/\r?\n/)
+            var intervals = $("#c_time").val().split(/\r?\n/)
+            var intervals = []
+
+            for (var interval in $("#c_time").val().split(/\r?\n/)) {
+                if (interval == "") {
+
+                } else {
+                    intervals.append({
+                        "from": interval.split(',')[0],
+                        "till": interval.split(',')[1]
+                    });
+                }
+            }
+
+            conv = {
+                "dutch": dutch,
+                "french": french,
+                "english": english,
+                "time": intervals,
+            }
+
+            payload = {
+                "conv": conv,
+                "scene": scene,
+                "guid": guid
+            }
+
+            post("save_conversations", payload)
+        }
+
+        function save_properties() {
+            var conv = {
+                "dutch": [],
+                "french": [],
+                "english": [],
+                "time": [],
+            };
+            var parameters = $(findElementByAttribute("property-item", "parameters")).("textarea").val();
+            var stop = $(findElementByAttribute("property-item", "stop")).find(".html").html();
+            var guid = $(findElementByAttribute("property-item", "guid")).val();
+            a = {
+                "name": $(findElementByAttribute("property-item", "name")).find("input").val(),
+                "loop": 0 < $(findElementByAttribute("property-item", "loop")).find("div.switch.inner.small.on").length,
+                "sound": $(findElementByAttribute("property-item", "sound")).find("input").val(),
+                "script": $(findElementByAttribute("property-item", "script")).find("select").val(),
+                "parameters": parameters.replace(/\<\/div\>/g, '').replace(/\<br\>/g, '').split('<div>'),
+                "singleton": 0 < $(findElementByAttribute("property-item", "singleton")).find("div.switch.inner.small.on").length,
+                "block": 0 < $(findElementByAttribute("property-item", "block")).find("div.switch.inner.small.on").length,
+                "stop": stop.replace(/\<\/div\>/g, '').replace(/\<br\>/g, '').split('<div>'),
+                "blacklist": 0 < $(findElementByAttribute("property-item", "blacklist")).find("div.switch.inner.small.on").length,
+                "sequence": _seq || [],
+                "conv": conv
+            }
+
+            payload = {
+                "a": a,
+                "scene": scene,
+                "guid": guid
+            }
+
+            post("save_object", payload);
+        }
+
+        function get(URL) {
+            URL = URL || "";
+            $.get(API + URL, {}, function(data) {
+
+                if (URL == "load_object_tree") {
+                    console.log(data);
+                    try {
+                        $("#object_tree .tree").html("");
+                    } catch (e) {}
+                    jui.ready(["ui.tree"], function(tree) {
+                        object_tree = tree("#object_tree .tree", {
+                            root: {
+                                title: "scene"
+                            },
+                            event: {
+                                select: function(node) {
+                                    this.select(node.index);
+                                    try {
+                                        if (~node.index.indexOf(".")) {
+                                            console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                                        }
+                                    } catch (e) {}
+                                }
+                            },
+                            tpl: {
+                                node: $("#tpl_node").html()
                             }
-                        } catch (e) {}
-                    }
-                },
-                tpl: {
-                    node: $("#tpl_node").html()
+                        });
+
+                        var scenes = Object.keys(data).length;
+                        for (var i = 0; i < scenes; i++) {
+
+                            object_tree.append({
+                                title: "" + i
+                            });
+                            for (var d in data) {
+                                object_tree.append("" + i, {
+                                    title: d["guid"] + " ::: " + d["name"]
+                                });
+                            }
+                        }
+                        for (var i = 0; i < scenes; i++) {
+
+                            object_tree.fold("" + i)
+                        }
+                    });
+
+                } else if (URL == "load_scene_tree") {
+                    try {
+                        $("#scene_tree .tree").html("");
+                    } catch (e) {}
+                    jui.ready(["ui.tree"], function(tree) {
+                        object_tree = tree("#scene_tree .tree", {
+                            root: {
+                                title: "scene"
+                            },
+                            event: {
+                                select: function(node) {
+                                    this.select(node.index);
+                                    try {
+                                        if (~node.index.indexOf(".")) {
+                                            console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                                            var scene = node.index;
+                                            if (isNumeric(scene)) {
+                                                post("load_background", {
+                                                    'scene': scene
+                                                });
+                                                post("load_music", {
+                                                    'scene': scene
+                                                });
+                                            }
+                                        }
+                                    } catch (e) {}
+                                }
+                            },
+                            tpl: {
+                                node: $("#tpl_node").html()
+                            }
+                        });
+                        var scenes = data["scenes"];
+                        for (var i = 0; i < scenes; i++) {
+
+                            object_tree.append({
+                                title: "" + i
+                            });
+                            object_tree.append("" + i, {
+                                title: "background"
+                            });
+                            object_tree.append("" + i, {
+                                title: "music"
+                            });
+                        }
+                        for (var i = 0; i < scenes; i++) {
+                            object_tree.fold("" + i)
+                        }
+                    });
+
+                } else if (URL == "load_conversation_tree") {
+                    try {
+                        $("#conv_tree .tree").html("");
+                    } catch (e) {}
+                    jui.ready(["ui.tree"], function(tree) {
+                        object_tree = tree("#conv_tree .tree", {
+                            root: {
+                                title: "scene"
+                            },
+                            event: {
+                                select: function(node) {
+                                    this.select(node.index);
+                                    try {
+                                        if (~node.index.indexOf(".")) {
+                                            console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                                            var scene = node.index.split('.')[0];
+                                            var guid = node.data.title.split(' ::: ')[0];
+                                            post("get_conversation", {
+                                                "scene": scene,
+                                                "guid": guid
+                                            });
+                                        }
+                                    } catch (e) {}
+                                }
+                            },
+                            tpl: {
+                                node: $("#tpl_node").html()
+                            }
+                        });
+                        var scenes = Object.keys(data).length;
+                        for (var i = 0; i < scenes; i++) {
+
+                            object_tree.append({
+                                title: "" + i
+                            });
+                            for (var d in data) {
+                                object_tree.append("" + i, {
+                                    title: d["guid"] + " ::: " + d["name"]
+                                });
+                            }
+
+                        }
+                    });
+
+                } else if (URL == "add_scene") {
+                    console.log(data);
+                    try {
+                        $("#scene_tree .tree").html("");
+                    } catch (e) {}
+                    jui.ready(["ui.tree"], function(tree) {
+                        object_tree = tree("#scene_tree .tree", {
+                            root: {
+                                title: "scene"
+                            },
+                            event: {
+                                select: function(node) {
+                                    this.select(node.index);
+                                    try {
+                                        if (~node.index.indexOf(".")) {
+                                            console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
+                                            var scene = node.index;
+                                            if (isNumeric(scene)) {
+                                                post("load_background", {
+                                                    'scene': scene
+                                                });
+                                                post("load_music", {
+                                                    'scene': scene
+                                                });
+                                            }
+                                        }
+                                    } catch (e) {}
+                                }
+                            },
+                            tpl: {
+                                node: $("#tpl_node").html()
+                            }
+                        });
+                        var scenes = data["scenes"];
+                        for (var i = 0; i < scenes; i++) {
+
+                            object_tree.append({
+                                title: "" + i
+                            });
+                            object_tree.append("" + i, {
+                                title: "background"
+                            });
+                            object_tree.append("" + i, {
+                                title: "music"
+                            });
+                        }
+                        for (var i = 0; i < scenes; i++) {
+                            object_tree.fold("" + i)
+                        }
+                    });
+                } else {
+                    console.log(data);
                 }
             });
-            var scenes = 8;
-            for (var i = 0; i < scenes; i++) {
 
-                object_tree.append({
-                    title: "" + i
-                });
+        };
 
-                object_tree.append("" + i, {
-                    title: guid4() + " ::: " + "Pajama Sam"
-                });
+        function post(URL, payload) {
+            URL = URL || "";
+            $.post(API + URL, payload, function(data) {
+                if (URL == "get_conversation") {
+                    var dutch = data["dutch"].join('\n');
+                    var french = data["french"].join('\n');
+                    var english = data["english"].join('\n');
+                    var intervals = []
 
-                object_tree.append("" + i, {
-                    title: guid4() + " ::: " + "Spy Fox"
-                });
-            }
-            for (var i = 0; i < scenes; i++) {
-
-                object_tree.fold("" + i)
-            }
-        });
-
-        jui.ready(["ui.tree"], function(tree) {
-            object_tree = tree("#scene_tree .tree", {
-                root: {
-                    title: "scene"
-                },
-                event: {
-                    select: function(node) {
-                        this.select(node.index);
-                        try {
-                            if (~node.index.indexOf(".")) {
-                                console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
-                            }
-                        } catch (e) {}
+                    for (var interval in data["time"]) {
+                        intervals.append("" + interval["from"] + ',' + interval["till"]);
                     }
-                },
-                tpl: {
-                    node: $("#tpl_node").html()
+
+                    intervals = intervals.join('\n');
+
+                    $("#c_dutch").val(dutch);
+                    $("#c_french").val(french);
+                    $("#c_english").val(english);
+                    $("#c_time").val(intervals);
+
+                } else if (URL == "load_background") {
+                    var path_file = data["path_file"];
+                    var _canvas = document.getElementById('scene_preview')
+                    var _ctx = canvas.getContext('2d');
+                    load_background(_ctx, path_file);
+
+                } else if (URL == "load_music") {
+                    var audio = document.getElementById('music_audio');
+                    var source = document.getElementById('music_source')
+                    source.src = data["pathfile"] + music_extension();
+                    audio.load();
+                    audio.play();
+
+                } else if (URL == "record_audio_animation") {
+                    console.log(data);
+
+                } else if (URL == "record_audio_scene") {
+                    console.log(data);
+
+                } else if (URL == "capture_background") {
+                    console.log(data);
+
+                } else if (URL == "save_conversations") {
+                    console.log(data);
+
+                } else {
+                    console.log(data);
                 }
             });
-            var scenes = 8;
-            for (var i = 0; i < scenes; i++) {
-
-                object_tree.append({
-                    title: "" + i
-                });
-
-                object_tree.append("" + i, {
-                    title: "Image"
-                });
-
-                object_tree.append("" + i, {
-                    title: "Music"
-                });
-            }
-            for (var i = 0; i < scenes; i++) {
-
-                object_tree.fold("" + i)
-            }
-        });
-
-
-        jui.ready(["ui.tree"], function(tree) {
-            object_tree = tree("#conv_tree .tree", {
-                root: {
-                    title: "scene"
-                },
-                event: {
-                    select: function(node) {
-                        this.select(node.index);
-                        try {
-                            if (~node.index.indexOf(".")) {
-                                console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
-                            }
-                        } catch (e) {}
-                    }
-                },
-                tpl: {
-                    node: $("#tpl_node").html()
-                }
-            });
-            var scenes = 8;
-            for (var i = 0; i < scenes; i++) {
-
-                object_tree.append({
-                    title: "" + i
-                });
-
-                object_tree.append("" + i, {
-                    title: guid4() + " ::: " + "Melon 1"
-                });
-
-                object_tree.append("" + i, {
-                    title: guid4() + " ::: " + "Melon 2"
-                });
-            }
-            for (var i = 0; i < scenes; i++) {
-
-                object_tree.fold("" + i)
-            }
-        });
+        };
 
     </script>
 
@@ -434,7 +646,6 @@
                             <script>
                                 var canvas = document.getElementById('canvas'),
                                     ctx = canvas.getContext('2d'),
-                                    rect = {},
                                     drag = false;
 
                                 function clear() {
@@ -589,7 +800,9 @@
                             <canvas id="scene_preview" style="border: #000000 solid 2px; " width="640px " height="480px "></canvas>
                         </div>
                         <br>
-                        <audio id="audio_scene" type="audio/ogg" controls style="width: 640px; height: 48px;" />
+                        <audio id="music_audio" controls style="width: 640px; height: 48px;">
+                            <source id="music_source" src="" />
+                        </audio>
                     </div>
                 </div>
             </div>
@@ -640,21 +853,21 @@
                 </div>
                 <div class="row" style="border: 2px solid #000">
                     <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">Time: start, stop</div>
-                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                    <textarea id="c_time" style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
                 </div>
                 <div class="row" style="border: 2px solid #000">
                     <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">Dutch</div>
-                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                    <textarea id="c_dutch" style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
                 </div>
                 <br>
                 <div class="row" style="border: 2px solid #000">
                     <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">English</div>
-                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                    <textarea id="c_english" style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
                 </div>
                 <br>
                 <div class="row" style="border: 2px solid #000">
                     <div style="text-align:center; font-size:22px; margin-bottom:8px; margin-top:8px;">French</div>
-                    <textarea style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
+                    <textarea id="c_french" style="width:99%; height:120px; resize:none; margin-left:2px;"></textarea>
                 </div>
                 <br>
             </div>

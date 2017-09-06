@@ -26,17 +26,24 @@ class HumongousTools(object):
         scenes = len(core)
         return scenes
 
+    def get_conversation(self, d):
+        guid = d["guid"]
+        scene = d["scene"]
+        core = load(self.core)
+        _scene = core[int(scene)]
+        return _scene["animations"][guid]["conv"]
+
     def get_animations(self, scene):
         core = load(self.core)
-        _scene = core[scene]
+        _scene = core[int(scene)]
         for animation in _scene["animations"]:
             yield {"guid": animation, "name": animation["name"]}
 
     def get_conversations(self, scene):
         core = load(self.core)
-        _scene = core[scene]
+        _scene = core[int(scene)]
         for animation in _scene["animations"]:
-            yield {"guid": animation, "name": animation["conv"]}
+            yield {"guid": animation, "name": animation["name"], "conv": animation["conv"]}
 
     def load_object_tree(self):
         d = {}
@@ -87,24 +94,20 @@ class HumongousTools(object):
         core = load(self.core)
         a = core[scene]["animations"][guid]
         return {
-            "path_file": [
-                '%s%s/%s/animations/%s/%s.mp3' % (
-                    self.folder, "scene", str(scene), guid, a["sound"] if a["sound"] != "" else guid
-                ),
-                '%s%s/%s/animations/%s/%s.ogg' % (
+            "path_file":
+                '%s%s/%s/animations/%s/%s' % (
                     self.folder, "scene", str(scene), guid, a["sound"] if a["sound"] != "" else guid
                 )
-            ]
         }
 
-    def load_background(self, scene):
-        return {"path_file": '%s%s/%s/background.png' % (self.folder, "scene", str(scene))}
+    def load_background(self, d):
+        return {"path_file": '%s%s/%s/background.png' % (self.folder, "scene", str(d['scene']))}
 
-    def load_music(self, scene):
+    def load_music(self, d):
         return {
             "path_file": [
-                '%s%s/%s/music.mp3' % (self.folder, "scene", str(scene)),
-                '%s%s/%s/music.ogg' % (self.folder, "scene", str(scene))
+                '%s%s/%s/music.mp3' % (self.folder, "scene", str(d['scene'])),
+                '%s%s/%s/music.ogg' % (self.folder, "scene", str(d['scene']))
             ]
         }
 
@@ -147,33 +150,17 @@ class HumongousTools(object):
         else:
             slice_frames(seconds, blacklist)
 
-    def save_object(self, a, scene, guid):
+    def save_object(self, d):
         core = load(self.core)
         save(self.folder + 'backup/' + uuid.uuid4() + '.json', core)
-
-        d = {
-            "name": a["name"],
-            "sound": a["sound"] if a["sound"] != "" else guid,
-            "script": a["script"],
-            "stop": a["stop"],
-            "params": a["params"],
-            "blacklist": a["blacklist"],
-            "singleton": a["singleton"],
-            "block": a["block"],
-            "loop": a["loop"],
-            "x": a["x"],
-            "y": a["y"],
-            "w": a["w"],
-            "h": a["h"],
-            "conv": {"dutch": [], "english": [], "french": [], "time": []},
-            "sequence": a["sequence"]
-        }
-
-        core[int(scene)]["animations"][guid] = d
+        core[int(d["scene"])]["animations"][d["guid"]] = d["a"]
         save(self.core, core)
         return self.load_object_tree()
 
-    def save_conversations(self, conv, scene, guid):
+    def save_conversations(self, d):
+        conv = d["conv"]
+        guid = d["guid"]
+        scene = d["scene"]
         core = load(self.core)
         save(self.folder + 'backup/' + uuid.uuid4() + '.json', core)
         core[int(scene)]["animations"][guid]["conv"] = conv
@@ -204,16 +191,19 @@ class HumongousTools(object):
     def record_audio_animation(self, scene, guid, seconds=10):
         path_file = "%s%s/%s/%s/%s" % (self.folder, "tmp", str(scene), guid, guid)
         record(path_file, seconds)
+        return {"status": "recording animation, please wait until done", "wait": seconds}
 
     def record_audio_scene(self, scene, seconds=10):
         path_file = "%s%s/%s/music-%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
         record(path_file, seconds)
+        return {"status": "recording background, please wait until done", "wait": seconds}
 
     def capture_background(self, scene, name="pajama sam", w=640, h=480, ox=8, oy=6):
         path_file = "%s%s/%s/background+%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
         x, y, _, _ = autoit.win_get_pos(name)
         box = screenshot(x+ox, y+oy, w, h)
         png(path_file, box)
+        return {"status": "background captured"}
 
 
 def main():
