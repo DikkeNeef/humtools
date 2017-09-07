@@ -3,7 +3,7 @@
 File name:          server.py
 Author:             Dikke Neef
 Date created:       28/08/2017
-Date last modified: 04/09/2017
+Date last modified: 07/09/2017
 Python Version:     2.7.13
 """
 # ==============================================================================
@@ -55,6 +55,7 @@ class HumongousTools(object):
         return d
 
     def load_scene_tree(self):
+        print(stringify({"scenes": self.total_scenes()}))
         return {"scenes": self.total_scenes()}
 
     def load_conversation_tree(self):
@@ -87,15 +88,14 @@ class HumongousTools(object):
         }
 
     def load_background(self, d):
-        return {"path_file": '%s%s/%s/background.png' % (self.folder, "scene", str(d['scene']))}
+        return stringify({
+            "path_file": '%s%s/%s/background.png' % (self.folder, "scene", str(d['scene']))
+        })
 
     def load_music(self, d):
-        return {
-            "path_file": [
-                '%s%s/%s/music.mp3' % (self.folder, "scene", str(d['scene'])),
-                '%s%s/%s/music.ogg' % (self.folder, "scene", str(d['scene']))
-            ]
-        }
+        return stringify({
+            "path_file": "%s%s/%s/music" % (self.folder, "scene", str(d['scene']))
+        })
 
     def backup(self):
         self.scheduler = Scheduler(partial(save_object, self))
@@ -195,11 +195,7 @@ class HumongousTools(object):
 
 
 def main():
-    reload_server = True
     server = HumongousTools()
-    if not reload_server:
-        server = open_object()
-
     server.backup()
     s = zerorpc.Server(server)
     s.bind("tcp://0.0.0.0:4242")

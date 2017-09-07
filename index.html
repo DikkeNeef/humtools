@@ -21,6 +21,7 @@
     <script src="lib/core.min.js"></script>
     <script src="dist/ui.min.js"></script>
     <script>
+        var API = 'http://localhost:8000/api/';
         var _guid = "00000000-0000-4000-0000-000000000000";
         var canvas = null;
         var ctx = null;
@@ -398,7 +399,7 @@
                                 select: function(node) {
                                     this.select(node.index);
                                     try {
-                                        if (~node.index.indexOf(".")) {
+                                        if (node.index.indexOf(".") < 0) {
                                             console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
                                             var scene = node.index;
                                             if (isNumeric(scene)) {
@@ -565,7 +566,7 @@
                 } else if (URL == "load_music") {
                     var audio = document.getElementById('music_audio');
                     var source = document.getElementById('music_source')
-                    source.src = data["pathfile"] + music_extension();
+                    source.src = data["path_file"] + music_extension();
                     audio.load();
                     audio.play();
 
@@ -620,25 +621,25 @@
             background: #FFF !important;
             color: #000 !important;
         }
-        
+
         .hover:hover {
             cursor: pointer !important;
             background: #000 !important;
             color: #FFF !important;
         }
-        
+
         .hover:hover {
             cursor: pointer !important;
             background: #000 !important;
             color: #FFF !important;
         }
-        
+
         .hover:active {
             cursor: pointer !important;
             box-shadow: 2px 2px -2px -2px #222;
             transform: translateY(-2px);
         }
-        
+
         .mts-property-container {
             float: left;
             width: 40%;
@@ -647,7 +648,7 @@
             overflow: auto;
             border: 1px solid #000;
         }
-        
+
         .mts-property-container h1 {
             color: #000;
             text-align: center;
@@ -655,7 +656,7 @@
             margin-bottom: 10px;
             border-bottom: 0px;
         }
-        
+
         .mts-tree-container {
             float: right;
             width: 57.5%;
@@ -664,7 +665,7 @@
             overflow: auto;
             border: 1px solid #000;
         }
-        
+
         .mts-tree-container h1 {
             color: #000;
             text-align: center;
@@ -962,6 +963,10 @@
                 step: 1,
                 tooltip: false,
             });
+        });
+
+        $(document).ready(function() {
+            get("load_scene_tree")
         });
 
     </script>

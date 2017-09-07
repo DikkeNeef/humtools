@@ -126,7 +126,6 @@ def loads(d):
 
 
 def save_object(obj, fn='zerorpc'):
-    print("saving")
     with open(fn + '.db', 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
