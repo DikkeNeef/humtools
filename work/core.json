@@ -1,0 +1,99 @@
+[
+    {
+        "animations": {
+            "00000000-0000-4000-0000-000000000000": {
+                "blacklist": false, 
+                "block": false, 
+                "conv": {
+                    "dutch": [
+                        "Hallo Wereld!", 
+                        "Dit is BoB."
+                    ], 
+                    "english": [
+                        "Hello World!", 
+                        "This is BoB."
+                    ], 
+                    "french": [
+                        "Bonjour tout le monde!", 
+                        "C'est BoB."
+                    ], 
+                    "time": [
+                        {
+                            "from": "0", 
+                            "till": "2"
+                        }, 
+                        {
+                            "from": "2", 
+                            "till": "5"
+                        }
+                    ]
+                }, 
+                "h": 48, 
+                "loop": false, 
+                "name": "test API", 
+                "params": [], 
+                "script": 0, 
+                "sequence": [
+                    [
+                        {
+                            "i": "regzrg15ezs1g65ze1sg56", 
+                            "x": 0, 
+                            "y": 0
+                        }, 
+                        {
+                            "i": "gnsq468esdh4f6h46s6sh4", 
+                            "x": 0, 
+                            "y": 0
+                        }
+                    ], 
+                    [
+                        {
+                            "i": "aa6854a6841685az4dfsdf", 
+                            "x": 4, 
+                            "y": 16
+                        }, 
+                        {
+                            "i": "gnsq468esdh4f6h46s6sh4", 
+                            "x": 13, 
+                            "y": 15
+                        }
+                    ]
+                ], 
+                "singleton": false, 
+                "sound": "", 
+                "stop": [], 
+                "w": 64, 
+                "x": 0, 
+                "y": 0
+            }
+        }, 
+        "mapper": {
+            "aa6854a6841685az4dfsdf": {
+                "h": 48, 
+                "w": 48, 
+                "x": 0, 
+                "y": 48
+            }, 
+            "gnsq468esdh4f6h46s6sh4": {
+                "h": 48, 
+                "w": 48, 
+                "x": 48, 
+                "y": 0
+            }, 
+            "regzrg15ezs1g65ze1sg56": {
+                "h": 48, 
+                "w": 48, 
+                "x": 0, 
+                "y": 0
+            }
+        }
+    }, 
+    {
+        "animations": {}, 
+        "mapper": {}
+    }, 
+    {
+        "animations": {}, 
+        "mapper": {}
+    }
+]

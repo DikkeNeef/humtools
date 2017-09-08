@@ -16,11 +16,5 @@ if __name__ == "__main__":
     host = '0.0.0.0'
     port = 8000
 
-    if len(sys.argv) == 2:
-        port = int(sys.argv[1])
-    elif len(sys.argv) > 2:
-        host = sys.argv[1]
-        port = int(sys.argv[2])
-
     server = SocketServer.TCPServer((host, port), ServerHandler)
     server.serve_forever()

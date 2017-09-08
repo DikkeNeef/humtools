@@ -134,7 +134,7 @@ def open_object(fn='zerorpc'):
     return pickle.load(open(fn + '.db', "rb"))
 
 
-def record(path_file, seconds=10):
+def record(path_files, seconds=10):
     default_frames = 44100
     recorded_frames = []
 
@@ -163,7 +163,6 @@ def record(path_file, seconds=10):
                     (device_info["maxOutputChannels"] < device_info["maxInputChannels"]) else
                     device_info["maxOutputChannels"])
 
-    print(device_info["defaultSampleRate"])
     stream = p.open(format=pyaudio.paInt16,
                     channels=channel_count,
                     rate=int(device_info["defaultSampleRate"]),
@@ -175,16 +174,21 @@ def record(path_file, seconds=10):
     for i in range(0, int(int(device_info["defaultSampleRate"]) / default_frames * seconds)):
         recorded_frames.append(stream.read(default_frames))
 
+    print("stop stream")
     stream.stop_stream()
     stream.close()
     p.terminate()
+    print("terminate stream")
 
-    wave_file = wave.open(path_file + '.wav', 'wb')
+    wave_file = wave.open("tmp/recording.wav", 'wb')
     wave_file.setnchannels(channel_count)
     wave_file.setsampwidth(p.get_sample_size(pyaudio.paInt16))
     wave_file.setframerate(int(device_info["defaultSampleRate"]))
     wave_file.writeframes(b''.join(recorded_frames))
     wave_file.close()
+    print("wav recorded")
 
-    AudioSegment.from_wav(path_file + '.wav').export(path_file + '.mp3', format="mp3")
-    AudioSegment.from_wav(path_file + '.wav').export(path_file + '.ogg', format="ogg")
+    for path_file in path_files:
+
+        AudioSegment.from_wav("tmp/recording.wav").export(path_file + '.mp3', format="mp3")
+        AudioSegment.from_wav("tmp/recording.wav").export(path_file + '.ogg', format="ogg")

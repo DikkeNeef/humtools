@@ -31,7 +31,7 @@ class HumongousTools(object):
         scene = d["scene"]
         core = load(self.core)
         _scene = core[int(scene)]
-        return _scene["animations"][guid]["conv"]
+        return stringify(_scene["animations"][guid]["conv"])
 
     def get_animations(self, scene):
         core = load(self.core)
@@ -43,7 +43,10 @@ class HumongousTools(object):
         core = load(self.core)
         _scene = core[int(scene)]
         for animation in _scene["animations"]:
-            yield {"guid": animation, "name": animation["name"], "conv": animation["conv"]}
+            print(animation)
+            yield {"guid": animation,
+                   "name": _scene["animations"][animation]["name"],
+                   "conv":_scene["animations"][animation]["conv"]}
 
     def load_object_tree(self):
         d = {}
@@ -64,7 +67,6 @@ class HumongousTools(object):
             d[str(scene)] = []
             for animation in self.get_conversations(scene):
                 d[str(scene)].append(animation)
-
         return d
 
     def load_conversation(self, scene, guid):
@@ -140,7 +142,7 @@ class HumongousTools(object):
 
     def save_object(self, d):
         core = load(self.core)
-        save(self.folder + 'backup/' + uuid.uuid4() + '.json', core)
+        save(self.folder + 'backup/' + str(uuid.uuid4()) + '.json', core)
         core[int(d["scene"])]["animations"][d["guid"]] = d["a"]
         save(self.core, core)
         return self.load_object_tree()
@@ -150,14 +152,14 @@ class HumongousTools(object):
         guid = d["guid"]
         scene = d["scene"]
         core = load(self.core)
-        save(self.folder + 'backup/' + uuid.uuid4() + '.json', core)
+        save(self.folder + 'backup/' + str(uuid.uuid4()) + '.json', core)
         core[int(scene)]["animations"][guid]["conv"] = conv
         save(self.core, core)
-        return self.load_conversation(scene, guid)
+        return stringify(self.load_conversation(scene, guid))
 
     def add_scene(self):
         core = load(self.core)
-        save(self.folder + 'backup/' + uuid.uuid4() + '.json', core)
+        save(self.folder + 'backup/' + str(uuid.uuid4()) + '.json', core)
 
         new_folder = self.folder + 'scene/%s/animations' % (self.total_scenes())
         if not os.path.exists(new_folder):
@@ -168,7 +170,7 @@ class HumongousTools(object):
             os.makedirs(new_folder)
 
         d = {
-            "container": {},
+            "animations": {},
             "mapper": {}
         }
 
@@ -181,17 +183,24 @@ class HumongousTools(object):
         record(path_file, seconds)
         return {"status": "recording animation, please wait until done", "wait": seconds}
 
-    def record_audio_scene(self, scene, seconds=10):
-        path_file = "%s%s/%s/music-%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
-        record(path_file, seconds)
-        return {"status": "recording background, please wait until done", "wait": seconds}
+    def record_audio_scene(self, d, seconds=10, name="Untitled - Paint"):
+        activate_window(name)
+        tpath_file = "%s%s/%s/music-%s" % (self.folder, "tmp", str(d["scene"]), uuid.uuid4())
+        spath_file = "%s%s/%s/music" % (self.folder, "scene", str(d["scene"]))
+        path_files = [tpath_file, spath_file]
+        record(path_files, seconds)
+        return stringify({"status": "recording background, please wait until done", "wait": seconds})
 
-    def capture_background(self, scene, name="pajama sam", w=640, h=480, ox=8, oy=6):
-        path_file = "%s%s/%s/background+%s" % (self.folder, "tmp", str(scene), uuid.uuid4())
+    def capture_background(self, d, w=640, h=480, ox=9, oy=24, name="Untitled - Paint"):
+        activate_window(name)
+        print(d)
+        tpath_file = "%s%s/%s/background-%s" % (self.folder, "tmp", str(d["scene"]), uuid.uuid4())
+        spath_file = "%s%s/%s/background" % (self.folder, "scene", str(d["scene"]))
         x, y, _, _ = autoit.win_get_pos(name)
         box = screenshot(x+ox, y+oy, w, h)
-        png(path_file, box)
-        return {"status": "background captured"}
+        png(tpath_file, box)
+        png(spath_file, box)
+        return stringify({"status": "background captured"})
 
 
 def main():

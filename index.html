@@ -26,7 +26,8 @@
         var canvas = null;
         var ctx = null;
         var drag = false;
-        var _scene = 0;
+        var _drag = false;
+        _scene = 0;
         var _seq = [];
         var rect = {
             'x': 0,
@@ -247,17 +248,19 @@
             var english = $("#c_english").val().split(/\r?\n/)
             var intervals = $("#c_time").val().split(/\r?\n/)
             var intervals = []
-
-            for (var interval in $("#c_time").val().split(/\r?\n/)) {
-                if (interval == "") {
-                    intervals.append({
+            var block = $("#c_time").val().split(/\r?\n/);
+            for (var interval in block) {
+                if (block[interval] == "") {
+                    intervals.push({
                         "from": 0,
                         "till": 0
                     });
                 } else {
-                    intervals.append({
-                        "from": interval.split(',')[0],
-                        "till": interval.split(',')[1]
+                    console.log(block[interval]);
+                    console.log(block[interval].split(','));
+                    intervals.push({
+                        "from": block[interval].split(',')[0],
+                        "till": block[interval].split(',')[1]
                     });
                 }
             }
@@ -271,8 +274,8 @@
 
             payload = {
                 "conv": conv,
-                "scene": scene,
-                "guid": guid
+                "scene": $("body").find("#conv_tree > div > ul > li > ul > li.open > ul > li.active").parent().parent().find("div")[0].innerHTML.trim(),
+                "guid": $("body").find("#conv_tree > div > ul > li > ul > li.open > ul > li.active > div").html().split(' ::: ')[0].trim()
             }
 
             post("save_conversations", payload)
@@ -402,12 +405,14 @@
                                         if (node.index.indexOf(".") < 0) {
                                             console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
                                             var scene = node.index;
+                                            var _scene = node.index;
                                             if (isNumeric(scene)) {
                                                 post("load_background", {
-                                                    'scene': scene
+                                                    'scene': node.index.split('.')[0]
                                                 });
+
                                                 post("load_music", {
-                                                    'scene': scene
+                                                    'scene': node.index.split('.')[0]
                                                 });
                                             }
                                         }
@@ -452,10 +457,12 @@
                                         if (~node.index.indexOf(".")) {
                                             console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
                                             var scene = node.index.split('.')[0];
+                                            var _scene = node.index.split('.')[0];
                                             var guid = node.data.title.split(' ::: ')[0];
+                                            var _guid = node.data.title.split(' ::: ')[0];
                                             post("get_conversation", {
-                                                "scene": scene,
-                                                "guid": guid
+                                                "scene": $("body").find("#conv_tree > div > ul > li > ul > li.open > ul > li.active").parent().parent().find("div")[0].innerHTML.trim(),
+                                                "guid": $("body").find("#conv_tree > div > ul > li > ul > li.open > ul > li.active > div").html().split(' ::: ')[0].trim()
                                             });
                                         }
                                     } catch (e) {}
@@ -465,15 +472,17 @@
                                 node: $("#tpl_node").html()
                             }
                         });
+                        console.log(data);
                         var scenes = Object.keys(data).length;
                         for (var i = 0; i < scenes; i++) {
 
                             object_tree.append({
                                 title: "" + i
                             });
-                            for (var d in data) {
+                            for (var d in data[i]) {
+                                console.log(data[i][d]);
                                 object_tree.append("" + i, {
-                                    title: d["guid"] + " ::: " + d["name"]
+                                    title: data[i][d]["guid"] + " ::: " + data[i][d]["name"]
                                 });
                             }
 
@@ -497,12 +506,13 @@
                                         if (~node.index.indexOf(".")) {
                                             console.log('' + node.index.split('.')[0] + ' -> ' + node.data.title);
                                             var scene = node.index;
+                                            var _scene = node.index;
                                             if (isNumeric(scene)) {
                                                 post("load_background", {
-                                                    'scene': scene
+                                                    'scene': node.index.split('.')[0]
                                                 });
                                                 post("load_music", {
-                                                    'scene': scene
+                                                    'scene': node.index.split('.')[0]
                                                 });
                                             }
                                         }
@@ -547,7 +557,7 @@
                     var intervals = []
 
                     for (var interval in data["time"]) {
-                        intervals.append("" + interval["from"] + ',' + interval["till"]);
+                        intervals.push("" + data["time"][interval]["from"] + ',' + data["time"][interval]["till"]);
                     }
 
                     intervals = intervals.join('\n');
@@ -560,7 +570,7 @@
                 } else if (URL == "load_background") {
                     var path_file = data["path_file"];
                     var _canvas = document.getElementById('scene_preview')
-                    var _ctx = canvas.getContext('2d');
+                    var _ctx = _canvas.getContext('2d');
                     load_background(_ctx, path_file);
 
                 } else if (URL == "load_music") {
@@ -591,10 +601,25 @@
             });
         };
 
+        function capture_background() {
+            post("capture_background", {
+                "scene": $("body").find("#conv_tree > div > ul > li.open > ul > li.active").parent().find("div")[0].innerHTML.trim()
+            });
+        }
 
+        function record_audio_scene() {
+            post("record_audio_scene", {
+                "scene": $("body").find("#conv_tree > div > ul > li.open > ul > li.active").parent().find("div")[0].innerHTML.trim()
+            });
+        }
+
+        function add_scene() {
+            get("add_scene")
+        }
 
         function new_object() {
             clear();
+            _drag = false;
             _scene = 0;
             _guid = "00000000-0000-4000-0000-000000000000";
             _seq = [];
@@ -762,16 +787,16 @@
                                     rect._Y = e.pageY - offset.top;
                                     rect.x = e.pageX - offset.left;
                                     rect.y = e.pageY - offset.top;
-                                    drag = true;
+                                    _drag = true;
                                 }
 
                                 function mouseUp() {
-                                    drag = false;
+                                    _drag = false;
                                     console.log(get_coords());
                                 }
 
                                 function mouseMove(e) {
-                                    if (drag) {
+                                    if (_drag) {
                                         rect.x = e.pageX - offset.left;
                                         rect.y = e.pageY - offset.top;
                                         rect.w = e.pageX - rect._X - offset.left;
@@ -842,11 +867,11 @@
                     <ul class="pill top">
 
                         <li class="active">
-                            <a href="#" class="hover">Capture Background</a>
+                            <a href="#" class="hover" onclick="capture_background()">Capture Background</a>
                         </li>
 
                         <li class="active">
-                            <a href="#" class="hover">Record Music</a>
+                            <a href="#" class="hover" onclick="record_audio_scene()">Record Music</a>
                         </li>
 
                     </ul>
@@ -872,7 +897,7 @@
                     </li>
 
                     <li class="active">
-                        <a href="#" class="hover">Add Scene</a>
+                        <a href="#" class="hover" onclick="add_scene()">Add Scene</a>
                     </li>
 
                 </ul>
@@ -901,7 +926,7 @@
                     <ul class="pill top">
 
                         <li class="active">
-                            <a href="#" class="hover">Save</a>
+                            <a href="#" class="hover" onclick="save_conversations()">Save</a>
                         </li>
 
                     </ul>
@@ -966,7 +991,8 @@
         });
 
         $(document).ready(function() {
-            get("load_scene_tree")
+            get("load_scene_tree");
+            get("load_conversation_tree");
         });
 
     </script>
